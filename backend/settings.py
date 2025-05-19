@@ -37,8 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'api',
-    'telegram_auth',
+    'backend.api',
+    'backend.telegram_auth',
 ]
 
 MIDDLEWARE = [
