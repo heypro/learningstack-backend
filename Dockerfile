@@ -15,4 +15,5 @@ COPY . .
 EXPOSE 8000
 
 # Run migrations and start server (adjust if you're using gunicorn or uvicorn)
-CMD ["sh", "-c", "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"]
+CMD ["sh", "-c", "python manage.py migrate && gunicorn backend.wsgi:application --bind 0.0.0.0:8000"]
+

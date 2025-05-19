@@ -19,5 +19,5 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('telegram_auth.urls')),
+    path('api/', include('api.urls')),  # <--- this is the important line
 ]

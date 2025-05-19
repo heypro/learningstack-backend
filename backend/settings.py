@@ -20,12 +20,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-z!)w9c-5@b+fe+!i_!8g4!j=d9p0a+f(*=ur=)zm^^3nmh81bw'
+SECRET_KEY = 'django-insecure-itv0a&lsu@73xd6$0vg9ll0wm9m*m$3b4r$u15b(r(o-n7^8tv'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['iregretnothing.ru']
+ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -37,24 +37,19 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'rest_framework',
     'api',
-    'corsheaders'
+    'telegram_auth',
 ]
-
-CSRF_TRUSTED_ORIGINS = ['https://iregretnothing.ru']
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware'
 ]
-
-CORS_ALLOW_ALL_ORIGINS = True
 
 ROOT_URLCONF = 'backend.urls'
 
@@ -127,34 +122,3 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'console': {  # logs to stdout, which Docker picks up
-            'class': 'logging.StreamHandler',
-        },
-    },
-    'loggers': {
-        'django': {  # all django logs
-            'handlers': ['console'],
-            'level': 'DEBUG',  # super verbose
-            'propagate': True,
-        },
-        'django.security.csrf': {  # logs CSRF failures
-            'handlers': ['console'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-        'django.request': {  # logs requests exceptions, including 403s
-            'handlers': ['console'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-    },
-    'root': {
-        'handlers': ['console'],
-        'level': 'DEBUG',
-    },
-}
