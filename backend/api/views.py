@@ -1,7 +1,7 @@
 import hmac
 import hashlib
 import time
-from django.http import JsonResponse, HttpResponseForbidden
+from django.http import JsonResponse, HttpResponseForbidden, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from urllib.parse import parse_qs
@@ -25,7 +25,7 @@ def telegram_auth(request):
     print("HIT!")
     auth_header = request.headers.get('Authorization', '')
     if not auth_header.startswith('tma '):
-        return str(auth_header)
+        return HttpResponse(auth_header)
 
     print("Authorized!")
     raw_init_data = auth_header[4:].strip()
@@ -35,11 +35,11 @@ def telegram_auth(request):
 
     if not check_signature(data, BOT_TOKEN):
         print ("kys0")
-        return str(f"{data} \n {BOT_TOKEN}")
+        return HttpResponse(f"{data}<br>{BOT_TOKEN}")
 
     auth_date = int(data.get('auth_date', 0))
     if not is_fresh(auth_date):
-        return HttpResponseForbidden('Init data expired')
+        return HttpResponse('Init data expired')
 
     user_data = {k: v for k, v in data.items() if k != 'hash'}
     return JsonResponse(user_data)
