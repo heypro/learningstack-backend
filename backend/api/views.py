@@ -22,15 +22,19 @@ def is_fresh(auth_date: int) -> bool:
 @csrf_exempt
 @require_POST
 def telegram_auth(request):
+    print("HIT!")
     auth_header = request.headers.get('Authorization', '')
     if not auth_header.startswith('tma '):
         return HttpResponseForbidden('Unauthorized')
 
+    print("Authorized!")
     raw_init_data = auth_header[4:].strip()
+    print(raw_init_data)
     data = parse_qs(raw_init_data)
     data = {k: v[0] for k, v in data.items()}
 
     if not check_signature(data, BOT_TOKEN):
+        print ("kys0")
         return HttpResponseForbidden('Invalid signature')
 
     auth_date = int(data.get('auth_date', 0))
