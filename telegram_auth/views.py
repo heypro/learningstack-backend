@@ -37,7 +37,10 @@ def is_fresh(auth_date: int) -> bool:
 @csrf_exempt
 @require_POST
 def telegram_auth(request):
+    print("HIT HIT HIT")
+    print("Inside telegram_auth view, BOT_TOKEN:", BOT_TOKEN)
     print(BOT_TOKEN)
+    print("past bot token")
     auth_header = request.headers.get('Authorization', '')
     if not auth_header.startswith('tma '):
         return HttpResponseForbidden('Unauthorized')
