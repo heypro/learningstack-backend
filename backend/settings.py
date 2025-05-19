@@ -42,6 +42,8 @@ INSTALLED_APPS = [
     'corsheaders'
 ]
 
+CSRF_TRUSTED_ORIGINS = ['https://iregretnothing.ru']
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',

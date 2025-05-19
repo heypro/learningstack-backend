@@ -12,6 +12,13 @@ import os
 # Your Telegram bot token here
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 
+# testing csrf bullshit
+@csrf_exempt
+def test_view(request):
+    if request.method == 'POST':
+        return JsonResponse({"message": "Hit test view successfully"})
+    return JsonResponse({"error": "Only POST allowed"}, status=405)
+
 def check_signature(data: dict, token: str) -> bool:
     data_check_arr = [f"{k}={v}" for k, v in sorted(data.items()) if k != 'hash']
     data_check_string = '\n'.join(data_check_arr)
