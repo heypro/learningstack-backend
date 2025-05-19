@@ -126,3 +126,34 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {  # logs to stdout, which Docker picks up
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django': {  # all django logs
+            'handlers': ['console'],
+            'level': 'DEBUG',  # super verbose
+            'propagate': True,
+        },
+        'django.security.csrf': {  # logs CSRF failures
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        'django.request': {  # logs requests exceptions, including 403s
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'DEBUG',
+    },
+}
