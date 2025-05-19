@@ -25,7 +25,7 @@ def telegram_auth(request):
     print("HIT!")
     auth_header = request.headers.get('Authorization', '')
     if not auth_header.startswith('tma '):
-        return HttpResponse(auth_header)
+        return JsonResponse({'error': 'Missing or malformed Authorization header'}, status=401)
 
     print("Authorized!")
     raw_init_data = auth_header[4:].strip()
@@ -35,11 +35,10 @@ def telegram_auth(request):
 
     if not check_signature(data, BOT_TOKEN):
         print ("kys0")
-        return HttpResponse(f"{data}<br>{BOT_TOKEN}")
-
+        return JsonResponse({'error': data}, status=403)
     auth_date = int(data.get('auth_date', 0))
     if not is_fresh(auth_date):
-        return HttpResponse('Init data expired')
+        return JsonResponse({'error': 'Init data expired'}, status=403)
 
     user_data = {k: v for k, v in data.items() if k != 'hash'}
     return JsonResponse(user_data)
