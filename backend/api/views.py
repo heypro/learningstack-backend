@@ -25,7 +25,7 @@ def telegram_auth(request):
     print("HIT!")
     auth_header = request.headers.get('Authorization', '')
     if not auth_header.startswith('tma '):
-        return HttpResponseForbidden('Unauthorized')
+        return str(auth_header)
 
     print("Authorized!")
     raw_init_data = auth_header[4:].strip()
@@ -35,7 +35,7 @@ def telegram_auth(request):
 
     if not check_signature(data, BOT_TOKEN):
         print ("kys0")
-        return HttpResponseForbidden('Invalid signature')
+        return str(f"{data} \n {BOT_TOKEN}")
 
     auth_date = int(data.get('auth_date', 0))
     if not is_fresh(auth_date):
