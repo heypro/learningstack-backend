@@ -13,12 +13,16 @@ import os
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 
 def check_signature(data: dict, token: str) -> bool:
-    # Sort keys, create data check string
     data_check_arr = [f"{k}={v}" for k, v in sorted(data.items()) if k != 'hash']
     data_check_string = '\n'.join(data_check_arr)
-    secret_key = hashlib.sha256(token.encode()).digest()
-    hmac_hash = hmac.new(secret_key, data_check_string.encode(), hashlib.sha256).hexdigest()
+    secret_key = hashlib.sha256(token.encode('utf-8')).digest()
+    hmac_hash = hmac.new(secret_key, data_check_string.encode('utf-8'), hashlib.sha256).hexdigest()
+    print(BOT_TOKEN)
+    print("Data check string:", data_check_string)
+    print("Calculated hash:", hmac_hash)
+    print("Received hash:", data.get('hash'))
     return hmac_hash == data.get('hash')
+
 
 def is_fresh(auth_date: int) -> bool:
     return (time.time() - auth_date) < 3600  # 1 hour validity
