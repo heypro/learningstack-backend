@@ -7,9 +7,10 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 import json
 from urllib.parse import parse_qs
+import os
 
 # Your Telegram bot token here
-BOT_TOKEN = '1234567890:ABC'
+BOT_TOKEN = os.getenv("BOT_TOKEN")
 
 def check_signature(data: dict, token: str) -> bool:
     # Sort keys, create data check string
