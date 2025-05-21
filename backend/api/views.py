@@ -1,55 +1,47 @@
-from rest_framework.views import APIView
+# api/views.py
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework import status
-from django.contrib.auth import get_user_model
-from rest_framework_simplejwt.tokens import RefreshToken
-import json
+from django.db.models import F
+from .models import TelegramUser
+from .serializers import LeaderboardRowSerializer
+from .utils import telegram_auth as parse_init_data
 
-
-from .utils.telegram_auth import verify_init_data
-
-User = get_user_model()
-
-class TelegramAuthView(APIView):
+@api_view(['POST'])
+@permission_classes([AllowAny])   # mini-apps can’t send CSRF; keep it open
+def click(request):
     """
-    POST { "initData": "<the raw query string>" }
-    ->  { "access": "<jwt>", "refresh": "<jwt>", "user": { ... } }
+    Body: { "increment": 1, "initData": "<raw string>" }
     """
-    authentication_classes = []   # public
-    permission_classes = []
+    init_data = request.data.get("initData")
+    increment = int(request.data.get("increment", 1))
 
-    def post(self, request):
-        raw = request.data.get("initData") or ""
-        try:
-            payload = verify_init_data(raw)
-        except ValueError as e:
-            return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    try:
+        payload = parse_init_data(init_data)
+    except ValueError as err:
+        return Response({"detail": str(err)}, status=status.HTTP_400_BAD_REQUEST)
 
-        tg_user = payload.get("user")
-        if not tg_user:
-            return Response({"detail": "user field missing"}, status=status.HTTP_400_BAD_REQUEST)
+    user, _ = TelegramUser.objects.get_or_create(
+        user_id   = payload["user"],
+        defaults  = {
+            "first_name": payload.get("first_name", ""),
+            "username"  : payload.get("username", "")
+        }
+    )
 
-        if isinstance(tg_user, str):
-            tg_user = json.loads(tg_user)
+    # atomic increment
+    TelegramUser.objects.filter(pk=user.pk).update(score=F('score') + increment)
+    user.refresh_from_db()
+
+    return Response({"score": user.score})
 
 
-        tg_id = tg_user["id"]
-        username = tg_user.get("username") or tg_user.get("first_name", "tg_user")
-
-        user, _ = User.objects.get_or_create(
-            username=f"tg_{tg_id}",
-            defaults={"first_name": tg_user.get("first_name", ""), "last_name": tg_user.get("last_name", "")},
-        )
-
-        refresh = RefreshToken.for_user(user)
-        return Response(
-            {
-                "access": str(refresh.access_token),
-                "refresh": str(refresh),
-                "user": {
-                    "id": user.id,
-                    "tg_id": tg_id,
-                    "username": username,
-                },
-            }
-        )
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def leaderboard(request):
+    """
+    Return top 50 players ordered by score desc.
+    """
+    top = TelegramUser.objects.order_by('-score')[:50]
+    return Response(LeaderboardRowSerializer(top, many=True).data)
