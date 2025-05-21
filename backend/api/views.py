@@ -4,7 +4,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework import status
 from django.db.models import F
-from .models import TelegramUser
+from backend.api.models import TelegramUser
 from .serializers import LeaderboardRowSerializer
 from .utils import telegram_auth as parse_init_data
 
