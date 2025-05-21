@@ -1,6 +1,6 @@
 from django.urls import path
-from .views import telegram_auth  # import your auth view from api/views.py
+from .views import TelegramAuthView  # import your auth view from api/views.py
 
 urlpatterns = [
-    path('auth/', telegram_auth),  # /api/auth/ route
+    path("telegram-auth/", TelegramAuthView.as_view()),
 ]

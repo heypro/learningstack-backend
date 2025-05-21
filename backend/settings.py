@@ -42,8 +42,27 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'backend.api'
+    'backend.api',
+    'rest_framework',
+    'rest_framework_simplejwt',
 ]
+
+from datetime import timedelta
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ),
+}
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=7),
+}
+
+import os
+
+TELEGRAM_BOT_TOKEN = os.getenv("BOT_TOKEN")
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
