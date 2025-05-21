@@ -7,6 +7,7 @@ from django.db.models import F
 from backend.api.models import TelegramUser
 from .serializers import LeaderboardRowSerializer
 from .utils.telegram_auth import verify_init_data as parse_init_data
+import json
 
 
 @api_view(['POST'])
@@ -20,14 +21,27 @@ def click(request):
 
     try:
         payload = parse_init_data(init_data)
+        user_field = payload["user"]
+        if isinstance(user_field, str) and user_field.startswith("{"):
+            user_obj = json.loads(user_field)
+            user_id = user_obj.get("id")
+            first_name = user_obj.get("first_name", "")
+            username = user_obj.get("username", "")
+        else:
+            user_id = int(user_field)
+            first_name = payload.get("first_name", "")
+            username = payload.get("username", "")
+
     except ValueError as err:
         return Response({"detail": str(err)}, status=status.HTTP_400_BAD_REQUEST)
 
     user, _ = TelegramUser.objects.get_or_create(
-        user_id   = payload["user"],
-        defaults  = {
-            "first_name": payload.get("first_name", ""),
-            "username"  : payload.get("username", "")
+
+        user_id=user_id,
+
+        defaults={
+            "first_name": first_name,
+            "username": username
         }
     )
 
