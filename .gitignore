@@ -21,7 +21,3 @@ staticfiles/
 # Env vars
 .env
 .env.*
-
-# Migrations (optional, depends on your workflow)
-**/migrations/*.py
-!**/migrations/__init__.py
