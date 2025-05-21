@@ -6,7 +6,8 @@ from rest_framework import status
 from django.db.models import F
 from backend.api.models import TelegramUser
 from .serializers import LeaderboardRowSerializer
-from .utils import telegram_auth as parse_init_data
+from .utils.telegram_auth import verify_init_data as parse_init_data
+
 
 @api_view(['POST'])
 @permission_classes([AllowAny])   # mini-apps can’t send CSRF; keep it open
